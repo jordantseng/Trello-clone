@@ -27,7 +27,5 @@ export const getTodosGroupedByColumn = async () => {
     ])
   );
 
-  console.log(columns);
-
-  return columns;
+  return { columns };
 };
