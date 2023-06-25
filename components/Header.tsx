@@ -16,25 +16,25 @@ const Header = () => {
 
   return (
     <header>
-      <div className="flex flex-col md:flex-row items-center p-5 bg-gray-500/10 rounded-b-2xl">
-        <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-br from-pink-400 to-[#0055D1] rounded-md filter blur-3xl opacity-50 -z-50" />
+      <div className="flex flex-col items-center rounded-b-2xl bg-gray-500/10 p-5 md:flex-row">
+        <div className="absolute left-0 top-0 -z-50 h-96 w-full rounded-md bg-gradient-to-br from-pink-400 to-[#0055D1] opacity-50 blur-3xl filter" />
         <Image
-          src="https://links.papareact.com/c2cdd5"
+          src="/trello-logo.webp"
           alt="Trello Logo"
           width={300}
           height={100}
-          className="w-44 md:w-56 pb-10 md:pb-0 object-contain"
+          className="w-44 object-contain pb-10 md:w-56 md:pb-0"
         />
-        <div className="flex items-center space-x-5 flex-1 justify-end w-full">
+        <div className="flex w-full flex-1 items-center justify-end space-x-5">
           <form
-            className="flex items-center space-x-5 bg-white rounded-md p-2 shadow-md flex-1 md:flex-initial"
+            className="flex flex-1 items-center space-x-5 rounded-md bg-white p-2 shadow-md md:flex-initial"
             onSubmit={(e) => e.preventDefault()}
           >
             <MagnifyingGlassIcon className="h-6 w-6 text-gray-400" />
             <input
               type="text"
               placeholder="Search"
-              className="flex-1 outline-none p-2"
+              className="flex-1 p-2 outline-none"
               // FIXME: render issue
               onChange={handleChange}
             />
