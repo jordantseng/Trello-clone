@@ -22,65 +22,80 @@ const Board = () => {
 
     if (type === 'column') {
       const entries = Array.from(board.columns.entries());
+
       const [removed] = entries.splice(source.index, 1);
+
       entries.splice(destination.index, 0, removed);
+
       const rearrangedCols = new Map(entries);
+
       setBoardState({
         ...board,
         columns: rearrangedCols,
       });
+
+      return;
     }
 
     const columns = Array.from(board.columns);
-    // FIXME: error 
-    const startColIndex = columns[Number(source.index)];
-    const endColIndex = columns[Number(destination.index)];
 
-    const startCol: Column = {
-      id: startColIndex[0],
-      todos: startColIndex[1].todos,
+    const startColumn = columns[Number(source.droppableId)];
+
+    const endColumn = columns[Number(destination.droppableId)];
+
+    const newStartColumn: Column = {
+      id: startColumn[0],
+      todos: startColumn[1].todos,
     };
 
-    const endCol: Column = {
-      id: endColIndex[0],
-      todos: endColIndex[1].todos,
+    const newEndColumn: Column = {
+      id: endColumn[0],
+      todos: endColumn[1].todos,
     };
 
-    if (!startCol || !endCol) {
+    if (source.index === destination.index) {
       return;
     }
 
-    if (source.index === destination.index && startCol === endCol) {
-      return;
-    }
+    const newTodos = newStartColumn.todos;
 
-    const newTodos = startCol.todos;
     const [todoMoved] = newTodos.splice(source.index, 1);
 
-    if (startCol.id === endCol.id) {
+    if (newStartColumn.id === newEndColumn.id) {
       newTodos.splice(destination.index, 0, todoMoved);
-      const newCol = {
-        id: startCol.id,
+
+      const newColumn = {
+        id: newStartColumn.id,
         todos: newTodos,
       };
-      const newCols = new Map(board.columns);
-      newCols.set(startCol.id, newCol);
-      setBoardState({ ...board, columns: newCols });
+
+      const newColumns = new Map(board.columns);
+
+      newColumns.set(newStartColumn.id, newColumn);
+
+      // TODO: changing order in same column do not be implemented
+
+      setBoardState({ ...board, columns: newColumns });
     } else {
-      const newCols = new Map(board.columns);
-      newCols.set(startCol.id, {
-        id: startCol.id,
+      const newColumns = new Map(board.columns);
+
+      newColumns.set(newStartColumn.id, {
+        id: newStartColumn.id,
         todos: newTodos,
       });
 
-      const endTodos = Array.from(endCol.todos);
-      endTodos.splice(destination.index, 0, todoMoved);
-      newCols.set(endCol.id, {
-        id: endCol.id,
-        todos: endTodos,
+      const newEndTodos = Array.from(newEndColumn.todos);
+
+      newEndTodos.splice(destination.index, 0, todoMoved);
+
+      newColumns.set(newEndColumn.id, {
+        id: newEndColumn.id,
+        todos: newEndTodos,
       });
-      updateTodoInDB(todoMoved, endCol.id);
-      setBoardState({ ...board, columns: newCols });
+
+      updateTodoInDB(todoMoved, newEndColumn.id);
+
+      setBoardState({ ...board, columns: newColumns });
     }
   };
 
