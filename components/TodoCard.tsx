@@ -1,17 +1,16 @@
 'use client';
-import getUrl from '@/lib/getUrl';
-import { XCircleIcon } from '@heroicons/react/24/solid';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import {
   DraggableProvidedDragHandleProps,
   DraggableProvidedDraggableProps,
 } from 'react-beautiful-dnd';
+import { XCircleIcon } from '@heroicons/react/24/solid';
+
+import getUrl from '@/lib/getUrl';
 
 type Props = {
   todo: Todo;
-  index: number;
-  id: TypedColumn;
   innerRef: (element: HTMLElement | null) => void;
   draggableProps: DraggableProvidedDraggableProps;
   dragHandleProps: DraggableProvidedDragHandleProps | null | undefined;
@@ -19,8 +18,6 @@ type Props = {
 
 const TodoCard = ({
   todo,
-  index,
-  id,
   innerRef,
   dragHandleProps,
   draggableProps,
@@ -28,23 +25,24 @@ const TodoCard = ({
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    if (todo.image) {
-      const fetchImage = async () => {
-        const url = await getUrl(todo.image!);
+    const fetchImage = async () => {
+      if (todo.image) {
+        const url = await getUrl(todo.image);
+
         if (url) {
           setImageUrl(url.toString());
         }
-      };
+      }
+    };
 
-      fetchImage();
-    }
+    fetchImage();
   }, [todo]);
 
   return (
     <div
-      className="bg-white rounded-md space-y-2 drop-shadow-md"
       {...dragHandleProps}
       {...draggableProps}
+      className="bg-white rounded-md space-y-2 drop-shadow-md"
       ref={innerRef}
     >
       <div className="flex justify-between items-center p-5">
