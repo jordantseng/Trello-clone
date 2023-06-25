@@ -8,10 +8,13 @@ import {
 import { XCircleIcon } from '@heroicons/react/24/solid';
 
 import getUrl from '@/lib/getUrl';
+import { useBoardStore } from '@/store/BoardStore';
 
 type Props = {
   todo: Todo;
   innerRef: (element: HTMLElement | null) => void;
+  index: number;
+  id: TypedColumn;
   draggableProps: DraggableProvidedDraggableProps;
   dragHandleProps: DraggableProvidedDragHandleProps | null | undefined;
 };
@@ -19,9 +22,12 @@ type Props = {
 const TodoCard = ({
   todo,
   innerRef,
+  index,
+  id,
   dragHandleProps,
   draggableProps,
 }: Props) => {
+  const { deleteTask } = useBoardStore((state) => state);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -38,6 +44,10 @@ const TodoCard = ({
     fetchImage();
   }, [todo]);
 
+  const handleDeleteTask = () => {
+    deleteTask(index, todo, id);
+  };
+
   return (
     <div
       {...dragHandleProps}
@@ -47,7 +57,10 @@ const TodoCard = ({
     >
       <div className="flex justify-between items-center p-5">
         <p>{todo.title}</p>
-        <button className="text-red-500 hover:text-red-600">
+        <button
+          className="text-red-500 hover:text-red-600"
+          onClick={handleDeleteTask}
+        >
           <XCircleIcon className="ml-5 h-8 w-8" />
         </button>
       </div>
