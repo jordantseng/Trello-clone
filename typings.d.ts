@@ -15,6 +15,7 @@ interface Todo extends Models.Document {
   title: string;
   status: TypedColumn;
   image?: Image;
+  index: number
 }
 
 interface Image {

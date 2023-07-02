@@ -15,6 +15,7 @@ export const getTodosGroupedByColumn = async () => {
         $createdAt: todo.$createdAt,
         status: todo.status,
         title: todo.title,
+        index: todo.index,
         ...(todo.image && { image: JSON.parse(todo.image) }),
       });
 
@@ -26,6 +27,10 @@ export const getTodosGroupedByColumn = async () => {
       ['done', { id: 'done', todos: [] }],
     ])
   );
+
+  columns.forEach((_, key) => {
+    columns.get(key)?.todos.sort((a, b) => a.index - b.index);
+  });
 
   return { columns };
 };
