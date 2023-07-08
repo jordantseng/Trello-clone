@@ -1,8 +1,9 @@
 'use client';
-
-import { useBoardStore } from '@/store/BoardStore';
+import { shallow } from 'zustand/shallow';
 import { RadioGroup } from '@headlessui/react';
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
+
+import { useBoardStore } from '@/store/BoardStore';
 
 const types = [
   {
@@ -26,7 +27,13 @@ const types = [
 ];
 
 const TaskTypeRadioGroup = () => {
-  const { setNewTaskType, newTaskType } = useBoardStore((state) => state);
+  const { setNewTaskType, newTaskType } = useBoardStore(
+    (state) => ({
+      setNewTaskType: state.setNewTaskInput,
+      newTaskType: state.newTaskType,
+    }),
+    shallow
+  );
 
   return (
     <div className="w-full py-5">

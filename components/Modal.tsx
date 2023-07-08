@@ -1,6 +1,8 @@
 'use client';
 import { FormEvent, Fragment, useRef } from 'react';
 import Image from 'next/image';
+import { shallow } from 'zustand/shallow';
+
 import { Dialog, Transition } from '@headlessui/react';
 import { useModalStore } from '@/store/ModalStore';
 import { useBoardStore } from '@/store/BoardStore';
@@ -8,15 +10,21 @@ import TaskTypeRadioGroup from '@/components/TaskTypeRadioGroup';
 import { PhotoIcon } from '@heroicons/react/24/solid';
 
 const Modal = () => {
-  const {
-    newTaskInput,
-    newTaskType,
-    image,
-    setNewTaskInput,
-    setImage,
-    addTask,
-  } = useBoardStore((state) => state);
-  const { isOpen, closeModal } = useModalStore((state) => state);
+  // both these two syntax do the same thing 
+  // => to reduce unnecessary re-renders
+  const newTaskInput = useBoardStore((state) => state.newTaskInput);
+  const newTaskType = useBoardStore((state) => state.newTaskType);
+  const image = useBoardStore((state) => state.image);
+  const setNewTaskInput = useBoardStore((state) => state.setNewTaskInput);
+  const setImage = useBoardStore((state) => state.setImage);
+  const addTask = useBoardStore((state) => state.addTask);
+  const { isOpen, closeModal } = useModalStore(
+    (state) => ({
+      isOpen: state.isOpen,
+      closeModal: state.closeModal,
+    }),
+    shallow
+  );
   const imagePickerRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -28,6 +36,8 @@ const Modal = () => {
     setImage(null);
     closeModal();
   };
+
+  console.log('??');
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -62,7 +72,7 @@ const Modal = () => {
               <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <Dialog.Title
                   as="h3"
-                  className="text-lg font-mediumn leading-6 text-gray-900 pb-2"
+                  className="font-mediumn pb-2 text-lg leading-6 text-gray-900"
                 >
                   Add a Task
                 </Dialog.Title>
@@ -72,18 +82,18 @@ const Modal = () => {
                     value={newTaskInput}
                     onChange={(e) => setNewTaskInput(e.target.value)}
                     placeholder="Enter a task here..."
-                    className="w-full border border-gray-300 rounded-md outline-none p-5"
+                    className="w-full rounded-md border border-gray-300 p-5 outline-none"
                   />
                 </div>
                 <TaskTypeRadioGroup />
                 <div className="mt-2">
                   <button
-                    className="w-full border border-gray-300 rounded-md outline-none p-5 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                    className="w-full rounded-md border border-gray-300 p-5 outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                     onClick={() => {
                       imagePickerRef.current?.click();
                     }}
                   >
-                    <PhotoIcon className="h-6 w-6 mr-2 inline-block" />
+                    <PhotoIcon className="mr-2 inline-block h-6 w-6" />
                     Upload Image
                   </button>
                   {image && (
@@ -92,7 +102,7 @@ const Modal = () => {
                       src={URL.createObjectURL(image)}
                       width={200}
                       height={200}
-                      className="w-full h-44 object-cover mt-2 filter hover:grayscale transition-all duration-150 cursor-not-allowed"
+                      className="mt-2 h-44 w-full cursor-not-allowed object-cover filter transition-all duration-150 hover:grayscale"
                       onClick={() => {
                         setImage(null);
                       }}
@@ -113,7 +123,7 @@ const Modal = () => {
                 <div className="mt-4">
                   <button
                     type="submit"
-                    className="inline-flex justify-center rounded-md botder botder-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:bg-gray-100 disabled:text-gray-300 disabled:cursor-not-allowed"
+                    className="botder botder-transparent inline-flex justify-center rounded-md bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300"
                     disabled={!newTaskInput}
                   >
                     Add Task

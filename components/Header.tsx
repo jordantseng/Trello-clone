@@ -35,7 +35,6 @@ const Header = () => {
               type="text"
               placeholder="Search"
               className="flex-1 p-2 outline-none"
-              // FIXME: render issue
               onChange={handleChange}
             />
             <button type="submit" hidden />

@@ -6,9 +6,10 @@ import { useBoardStore } from '@/store/BoardStore';
 import Column from '@/components/Column';
 
 const Board = () => {
-  const { board, setBoardState, getBoard, updateTodoOrder } = useBoardStore(
-    (state) => state
-  );
+  const board = useBoardStore((state) => state.board);
+  const setBoardState = useBoardStore((state) => state.setBoardState);
+  const getBoard = useBoardStore((state) => state.getBoard);
+  const updateTodoOrder = useBoardStore((state) => state.updateTodoOrder);
 
   useEffect(() => {
     getBoard();

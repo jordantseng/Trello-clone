@@ -1,5 +1,7 @@
 import { Draggable, Droppable } from 'react-beautiful-dnd';
+import { shallow } from 'zustand/shallow';
 import { PlusCircleIcon } from '@heroicons/react/24/solid';
+
 import TodoCard from '@/components/TodoCard';
 import { useBoardStore } from '@/store/BoardStore';
 import { useModalStore } from '@/store/ModalStore';
@@ -19,7 +21,13 @@ const idToColumnText: {
 };
 
 const Column = ({ id, todos, index }: Props) => {
-  const { searchString, setNewTaskType } = useBoardStore((state) => state);
+  const { searchString, setNewTaskType } = useBoardStore(
+    (state) => ({
+      searchString: state.searchString,
+      setNewTaskType: state.setNewTaskType,
+    }),
+    shallow
+  );
   const { openModal } = useModalStore((state) => state);
 
   const todoCounts =
@@ -47,13 +55,13 @@ const Column = ({ id, todos, index }: Props) => {
               <div
                 {...provided.droppableProps}
                 ref={provided.innerRef}
-                className={`p-2 rounded-2xl shadow-sm ${
+                className={`rounded-2xl p-2 shadow-sm ${
                   snapshot.isDraggingOver ? 'bg-green-200' : 'bg-white/50'
                 }`}
               >
-                <h2 className="flex justify-between font-bold text-xl p-2">
+                <h2 className="flex justify-between p-2 text-xl font-bold">
                   {idToColumnText[id]}
-                  <span className="text-gray-500 bg-gray-200 rounded-full px-2 py-1 text-sm font-normal">
+                  <span className="rounded-full bg-gray-200 px-2 py-1 text-sm font-normal text-gray-500">
                     {todoCounts}
                   </span>
                 </h2>

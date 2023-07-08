@@ -27,7 +27,7 @@ const TodoCard = ({
   dragHandleProps,
   draggableProps,
 }: Props) => {
-  const { deleteTask } = useBoardStore((state) => state);
+  const deleteTask = useBoardStore((state) => state.deleteTask);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -52,10 +52,10 @@ const TodoCard = ({
     <div
       {...dragHandleProps}
       {...draggableProps}
-      className="bg-white rounded-md space-y-2 drop-shadow-md"
+      className="space-y-2 rounded-md bg-white drop-shadow-md"
       ref={innerRef}
     >
-      <div className="flex justify-between items-center p-5">
+      <div className="flex items-center justify-between p-5">
         <p>{todo.title}</p>
         <button
           className="text-red-500 hover:text-red-600"
@@ -71,7 +71,7 @@ const TodoCard = ({
             alt="Task image"
             width={400}
             height={200}
-            className="w-full object-contain rounded-b-md"
+            className="w-full rounded-b-md object-contain"
           />
         </div>
       )}
