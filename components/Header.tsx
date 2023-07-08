@@ -1,18 +1,20 @@
 'use client';
 import { ChangeEvent } from 'react';
 import Image from 'next/image';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import Avatar from 'react-avatar';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 
-import { useBoardStore } from '@/store/BoardStore';
+import { useSearchStore } from '@/store/SearchStore';
 import debounce from '@/lib/debounce';
 
 const Header = () => {
-  const setSearchString = useBoardStore((state) => state.setSearchString);
+  const updateSearchString = useSearchStore(
+    (state) => state.updateSearchString
+  );
 
-  const handleChange = debounce((e: ChangeEvent<HTMLInputElement>) => {
-    setSearchString(e.target.value);
-  }, 300);
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    updateSearchString(e.target.value);
+  };
 
   return (
     <header>
@@ -35,7 +37,7 @@ const Header = () => {
               type="text"
               placeholder="Search"
               className="flex-1 p-2 outline-none"
-              onChange={handleChange}
+              onChange={debounce(handleChange, 300)}
             />
             <button type="submit" hidden />
           </form>

@@ -5,6 +5,7 @@ import { PlusCircleIcon } from '@heroicons/react/24/solid';
 import TodoCard from '@/components/TodoCard';
 import { useBoardStore } from '@/store/BoardStore';
 import { useModalStore } from '@/store/ModalStore';
+import { useSearchStore } from '@/store/SearchStore';
 
 type Props = {
   id: TypedColumn;
@@ -21,14 +22,9 @@ const idToColumnText: {
 };
 
 const Column = ({ id, todos, index }: Props) => {
-  const { searchString, setNewTaskType } = useBoardStore(
-    (state) => ({
-      searchString: state.searchString,
-      setNewTaskType: state.setNewTaskType,
-    }),
-    shallow
-  );
-  const { openModal } = useModalStore((state) => state);
+  const setNewTaskType = useBoardStore((state) => state.setNewTaskType);
+  const searchString = useSearchStore((state) => state.searchString);
+  const openModal = useModalStore((state) => state.openModal);
 
   const todoCounts =
     searchString === ''

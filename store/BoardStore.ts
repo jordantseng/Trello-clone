@@ -9,8 +9,6 @@ interface BoardState {
   getBoard: () => void;
   setBoardState: (board: Board) => void;
   updateTodoOrder: (todos: Todo[]) => void;
-  searchString: string;
-  setSearchString: (searchString: string) => void;
   newTaskInput: string;
   deleteTask: (taskIndex: number, todo: Todo, id: TypedColumn) => void;
   setNewTaskInput: (input: string) => void;
@@ -27,13 +25,11 @@ export const useBoardStore = create<BoardState>((set, get) => ({
   },
   getBoard: async () => {
     const board = await getTodosGroupedByColumn();
-    console.log('board', board);
+
     set({ board });
   },
   setBoardState: (board) => set({ board }),
   updateTodoOrder: async (todos) => {
-    console.log(todos);
-
     for (const todo of todos) {
       await databases.updateDocument(
         process.env.NEXT_PUBLIC_DATABASE_ID!,
@@ -45,8 +41,6 @@ export const useBoardStore = create<BoardState>((set, get) => ({
       );
     }
   },
-  searchString: '',
-  setSearchString: (searchString) => set({ searchString }),
   newTaskInput: '',
   newTaskType: 'todo',
   deleteTask: async (taskIndex, todo, id) => {
