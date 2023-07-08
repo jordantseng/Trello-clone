@@ -45,20 +45,22 @@ const Board = () => {
       return;
     }
 
-    const newColumnEntries = Array.from(structuredClone(board.columns));
+    const entries = Array.from(structuredClone(board.columns));
 
-    const startColumnEntry = newColumnEntries[Number(source.droppableId)];
+    const [startEntryKey, startEntryValue] =
+      entries[Number(source.droppableId)];
 
     const newStartColumn: Column = {
-      id: startColumnEntry[0],
-      todos: structuredClone(startColumnEntry[1].todos),
+      id: startEntryKey,
+      todos: startEntryValue.todos,
     };
 
-    const endColumnEntry = newColumnEntries[Number(destination.droppableId)];
+    const [endEntryKey, endEntryValue] =
+      entries[Number(destination.droppableId)];
 
     const newEndColumn: Column = {
-      id: endColumnEntry[0],
-      todos: structuredClone(endColumnEntry[1].todos),
+      id: endEntryKey,
+      todos: endEntryValue.todos,
     };
 
     const newStartTodos = newStartColumn.todos;
