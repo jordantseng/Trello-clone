@@ -78,9 +78,9 @@ const Modal = () => {
                   <input
                     type="text"
                     value={newTaskInput}
-                    onChange={(e) => setNewTaskInput(e.target.value)}
                     placeholder="Enter a task here..."
                     className="w-full rounded-md border border-gray-300 p-5 outline-none"
+                    onChange={(e) => setNewTaskInput(e.target.value)}
                   />
                 </div>
                 <TaskTypeRadioGroup />

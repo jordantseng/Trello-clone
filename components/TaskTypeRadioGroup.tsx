@@ -29,7 +29,7 @@ const types = [
 const TaskTypeRadioGroup = () => {
   const { setNewTaskType, newTaskType } = useBoardStore(
     (state) => ({
-      setNewTaskType: state.setNewTaskInput,
+      setNewTaskType: state.setNewTaskType,
       newTaskType: state.newTaskType,
     }),
     shallow
@@ -40,57 +40,55 @@ const TaskTypeRadioGroup = () => {
       <div className="mx-auto w-full max-w-md">
         <RadioGroup value={newTaskType} onChange={(e) => setNewTaskType(e)}>
           <div className="space-y-2">
-            {types.map((type) => {
-              return (
-                <RadioGroup.Option
-                  key={type.id}
-                  value={type.id}
-                  className={({ active, checked }) =>
-                    `${
-                      active
-                        ? 'ring ring-white ring-opacity-60 ring-offset-2 ring-offset-sky-300'
-                        : ''
-                    } ${
-                      checked
-                        ? `${type.color} bg-opacity-75 text-white`
-                        : 'bg-white'
-                    } relative flex cursor-pointer rounded-lg px-5 py-4 shadow-md focus-visible:outline-none`
-                  }
-                >
-                  {({ active, checked }) => (
-                    <>
-                      <div className="flex w-full items-center justify-between">
-                        <div className="flex items-center">
-                          <div className="text-sm">
-                            <RadioGroup.Label
-                              as="p"
-                              className={`font-medium ${
-                                checked ? 'text-white' : 'text-gray-900'
-                              }`}
-                            >
-                              {type.name}
-                            </RadioGroup.Label>
-                            <RadioGroup.Description
-                              as="span"
-                              className={`inline ${
-                                checked ? 'text-white' : 'text-gray-500'
-                              }`}
-                            >
-                              <span>{type.description}</span>
-                            </RadioGroup.Description>
-                          </div>
+            {types.map((type) => (
+              <RadioGroup.Option
+                key={type.id}
+                value={type.id}
+                className={({ active, checked }) =>
+                  `${
+                    active
+                      ? 'ring ring-white ring-opacity-60 ring-offset-2 ring-offset-sky-300'
+                      : ''
+                  } ${
+                    checked
+                      ? `${type.color} bg-opacity-75 text-white`
+                      : 'bg-white'
+                  } relative flex cursor-pointer rounded-lg px-5 py-4 shadow-md focus-visible:outline-none`
+                }
+              >
+                {({ active, checked }) => (
+                  <>
+                    <div className="flex w-full items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="text-sm">
+                          <RadioGroup.Label
+                            as="p"
+                            className={`font-medium ${
+                              checked ? 'text-white' : 'text-gray-900'
+                            }`}
+                          >
+                            {type.name}
+                          </RadioGroup.Label>
+                          <RadioGroup.Description
+                            as="span"
+                            className={`inline ${
+                              checked ? 'text-white' : 'text-gray-500'
+                            }`}
+                          >
+                            <span>{type.description}</span>
+                          </RadioGroup.Description>
                         </div>
-                        {checked && (
-                          <div className="shrink-0 text-white">
-                            <CheckCircleIcon className="h-6 w-6" />
-                          </div>
-                        )}
                       </div>
-                    </>
-                  )}
-                </RadioGroup.Option>
-              );
-            })}
+                      {checked && (
+                        <div className="shrink-0 text-white">
+                          <CheckCircleIcon className="h-6 w-6" />
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </RadioGroup.Option>
+            ))}
           </div>
         </RadioGroup>
       </div>

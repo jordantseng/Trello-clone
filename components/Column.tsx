@@ -21,6 +21,7 @@ const idToColumnText: {
 };
 
 const Column = ({ id, todos, index }: Props) => {
+  const setNewTaskInput = useBoardStore((state) => state.setNewTaskInput);
   const setNewTaskType = useBoardStore((state) => state.setNewTaskType);
   const searchString = useSearchStore((state) => state.searchString);
   const openModal = useModalStore((state) => state.openModal);
@@ -33,6 +34,7 @@ const Column = ({ id, todos, index }: Props) => {
         ).length;
 
   const handleAddTodo = () => {
+    setNewTaskInput('')
     setNewTaskType(id);
     openModal();
   };
