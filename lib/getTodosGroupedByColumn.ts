@@ -32,5 +32,5 @@ export const getTodosGroupedByColumn = async () => {
     columns.get(key)?.todos.sort((a, b) => a.index - b.index);
   });
 
-  return { columns };
+  return columns;
 };

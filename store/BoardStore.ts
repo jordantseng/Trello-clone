@@ -2,14 +2,17 @@ import { create } from 'zustand';
 import { DropResult } from 'react-beautiful-dnd';
 
 import { ID, databases, storages } from '@/appwrite';
-import { getTodosGroupedByColumn } from '@/lib/getTodosGroupedByColumn';
+import {
+  getTodosGroupedByColumn,
+  getTodosGroupedByColumnV2,
+} from '@/lib/getTodosGroupedByColumn';
 import uploadImage from '@/lib/uploadImage';
 import updateTodos from '@/lib/updateTodos';
 
 interface BoardState {
-  board: Board;
-  getBoard: () => void;
-  updateColumnOrder: (result: DropResult) => void;
+  columns: Map<TypedColumn, Column>;
+  getColumns: () => void;
+  setColumns: (result: DropResult) => void;
   newTaskInput: string;
   newTaskType: TypedColumn;
   image: File | null;
@@ -21,15 +24,13 @@ interface BoardState {
 }
 
 export const useBoardStore = create<BoardState>((set, get) => ({
-  board: {
-    columns: new Map<TypedColumn, Column>(),
-  },
-  getBoard: async () => {
-    const board = await getTodosGroupedByColumn();
+  columns: new Map<TypedColumn, Column>(),
+  getColumns: async () => {
+    const columns = await getTodosGroupedByColumn();
 
-    set({ board });
+    set({ columns });
   },
-  updateColumnOrder: (result: DropResult) => {
+  setColumns: (result) => {
     const { destination, source, type } = result;
 
     if (!destination) {
@@ -37,9 +38,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
     }
 
     if (type === 'column') {
-      const entries = structuredClone(
-        Array.from(get().board.columns.entries())
-      );
+      const entries = structuredClone(Array.from(get().columns.entries()));
 
       const [sourceEntry] = entries.splice(source.index, 1);
 
@@ -47,11 +46,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
 
       const rearrangedCols = new Map(entries);
 
-      set({
-        board: {
-          columns: rearrangedCols,
-        },
-      });
+      set({ columns: rearrangedCols });
 
       return;
     }
@@ -63,7 +58,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
       return;
     }
 
-    const entries = Array.from(structuredClone(get().board.columns));
+    const entries = Array.from(structuredClone(get().columns));
 
     const [startEntryKey, startEntryValue] =
       entries[Number(source.droppableId)];
@@ -96,7 +91,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
         })),
       };
 
-      const newColumns = new Map(structuredClone(get().board.columns));
+      const newColumns = new Map(structuredClone(get().columns));
 
       newColumns.set(newStartColumn.id, newColumn);
 
@@ -108,9 +103,9 @@ export const useBoardStore = create<BoardState>((set, get) => ({
 
       updateTodos(result);
 
-      set({ board: { columns: newColumns } });
+      set({ columns: newColumns });
     } else {
-      const newColumns = new Map(structuredClone(get().board.columns));
+      const newColumns = new Map(structuredClone(get().columns));
 
       newColumns.set(newStartColumn.id, {
         ...newStartColumn,
@@ -137,7 +132,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
 
       updateTodos(result);
 
-      set({ board: { columns: newColumns } });
+      set({ columns: newColumns });
     }
   },
   newTaskInput: '',
@@ -167,19 +162,19 @@ export const useBoardStore = create<BoardState>((set, get) => ({
         title: todo,
         status: columnId,
         ...(file && { image: JSON.stringify(file) }),
-        index: get().board.columns.get(columnId)!.todos.length,
+        index: get().columns.get(columnId)!.todos.length,
       }
     );
 
     set((state) => {
-      const newCols = new Map(state.board.columns);
+      const newCols = new Map(state.columns);
 
       const newTodo: Todo = {
         $id,
         $createdAt: new Date().toISOString(),
         title: todo,
         status: columnId,
-        index: get().board.columns.get(columnId)!.todos.length,
+        index: get().columns.get(columnId)!.todos.length,
         ...(file && { image: file }),
       };
 
@@ -195,19 +190,17 @@ export const useBoardStore = create<BoardState>((set, get) => ({
       }
 
       return {
-        board: {
-          columns: newCols,
-        },
+        columns: newCols,
         newTaskInput: '',
       };
     });
   },
   deleteTask: async (taskIndex, todo, id) => {
-    const newCols = new Map(get().board.columns);
+    const newCols = new Map(get().columns);
 
     newCols.get(id)?.todos.splice(taskIndex, 1);
 
-    set({ board: { columns: newCols } });
+    set({ columns: newCols });
 
     if (todo.image) {
       await storages.deleteFile(todo.image.bucketId, todo.image.fileId);

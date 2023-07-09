@@ -6,17 +6,19 @@ import { useBoardStore } from '@/store/BoardStore';
 import Column from '@/components/Column';
 
 const Board = () => {
-  const board = useBoardStore((state) => state.board);
-  const getBoard = useBoardStore((state) => state.getBoard);
-  const updateColumnOrder = useBoardStore((state) => state.updateColumnOrder);
+  const columns = useBoardStore((state) => state.columns);
+  const getColumns = useBoardStore((state) => state.getColumns);
+  const setColumns = useBoardStore((state) => state.setColumns);
 
   useEffect(() => {
-    getBoard();
-  }, [getBoard]);
+    getColumns();
+  }, [getColumns]);
 
   const handleDragEnd = (result: DropResult) => {
-    updateColumnOrder(result);
+    setColumns(result);
   };
+
+  console.log(columns)
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
@@ -27,7 +29,7 @@ const Board = () => {
             className="mx-auto grid max-w-7xl grid-cols-1 gap-5 md:grid-cols-3"
             ref={provided.innerRef}
           >
-            {Array.from(board.columns.entries()).map(([id, column], index) => (
+            {Array.from(columns.entries()).map(([id, column], index) => (
               <Column key={id} id={id} index={index} todos={column.todos} />
             ))}
           </div>
