@@ -1,14 +1,15 @@
 import { create } from 'zustand';
+import { DropResult } from 'react-beautiful-dnd';
 
 import { ID, databases, storages } from '@/appwrite';
 import { getTodosGroupedByColumn } from '@/lib/getTodosGroupedByColumn';
 import uploadImage from '@/lib/uploadImage';
+import updateTodos from '@/lib/updateTodos';
 
 interface BoardState {
   board: Board;
-  getBoard: () => void;
-  setBoardState: (board: Board) => void;
-  updateTodoOrder: (todos: Todo[]) => void;
+  getBoard: () => void;  
+  updateColumnOrder: (result: DropResult) => void;
   newTaskInput: string;
   deleteTask: (taskIndex: number, todo: Todo, id: TypedColumn) => void;
   setNewTaskInput: (input: string) => void;
@@ -28,17 +29,116 @@ export const useBoardStore = create<BoardState>((set, get) => ({
 
     set({ board });
   },
-  setBoardState: (board) => set({ board }),
-  updateTodoOrder: async (todos) => {
-    for (const todo of todos) {
-      await databases.updateDocument(
-        process.env.NEXT_PUBLIC_DATABASE_ID!,
-        process.env.NEXT_PUBLIC_TODOS_COLLECTION_ID!,
-        todo.$id,
-        {
-          ...todo,
-        }
+  //
+  updateColumnOrder: (result: DropResult) => {
+    const { destination, source, type } = result;
+
+    if (!destination) {
+      return;
+    }
+
+    if (type === 'column') {
+      const entries = structuredClone(
+        Array.from(get().board.columns.entries())
       );
+
+      const [sourceEntry] = entries.splice(source.index, 1);
+
+      entries.splice(destination!.index, 0, sourceEntry);
+
+      const rearrangedCols = new Map(entries);
+
+      set({
+        board: {
+          columns: rearrangedCols,
+        },
+      });
+
+      return;
+    }
+
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    ) {
+      return;
+    }
+
+    const entries = Array.from(structuredClone(get().board.columns));
+
+    const [startEntryKey, startEntryValue] =
+      entries[Number(source.droppableId)];
+
+    const newStartColumn: Column = {
+      id: startEntryKey,
+      todos: startEntryValue.todos,
+    };
+
+    const [endEntryKey, endEntryValue] =
+      entries[Number(destination.droppableId)];
+
+    const newEndColumn: Column = {
+      id: endEntryKey,
+      todos: endEntryValue.todos,
+    };
+
+    const newStartTodos = newStartColumn.todos;
+
+    const [todoMoved] = newStartTodos.splice(source.index, 1);
+
+    if (newStartColumn.id === newEndColumn.id) {
+      newStartTodos.splice(destination.index, 0, todoMoved);
+
+      const newColumn = {
+        id: newStartColumn.id,
+        todos: newStartTodos.map((todo, index) => ({
+          ...todo,
+          index,
+        })),
+      };
+
+      const newColumns = new Map(structuredClone(get().board.columns));
+
+      newColumns.set(newStartColumn.id, newColumn);
+
+      const result: Todo[] = [];
+
+      newColumns.forEach((column) => {
+        result.push(...column.todos);
+      });
+
+      updateTodos(result)
+
+      set({ board: { columns: newColumns } });
+    } else {
+      const newColumns = new Map(structuredClone(get().board.columns));
+
+      newColumns.set(newStartColumn.id, {
+        ...newStartColumn,
+        todos: newStartTodos.map((todo, index) => ({ ...todo, index })),
+      });
+
+      const newEndTodos = Array.from(newEndColumn.todos);
+
+      newEndTodos.splice(destination.index, 0, {
+        ...todoMoved,
+        status: newEndColumn.id,
+      });
+
+      newColumns.set(newEndColumn.id, {
+        ...newEndColumn,
+        todos: newEndTodos.map((todo, index) => ({ ...todo, index })),
+      });
+
+      const result: Todo[] = [];
+
+      newColumns.forEach((column) => {
+        result.push(...column.todos);
+      });
+
+      updateTodos(result)
+
+      set({ board: { columns: newColumns } });
     }
   },
   newTaskInput: '',
