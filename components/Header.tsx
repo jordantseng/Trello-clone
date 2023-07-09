@@ -8,12 +8,12 @@ import { useSearchStore } from '@/store/SearchStore';
 import debounce from '@/lib/debounce';
 
 const Header = () => {
-  const updateSearchString = useSearchStore(
-    (state) => state.updateSearchString
+  const setSearchString = useSearchStore(
+    (state) => state.setSearchString
   );
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    updateSearchString(e.target.value);
+    setSearchString(e.target.value);
   };
 
   return (

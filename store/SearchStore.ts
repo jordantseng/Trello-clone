@@ -2,12 +2,12 @@ import { create } from 'zustand';
 
 interface SearchStore {
   searchString: string;
-  updateSearchString: (seachString: string) => void;
+  setSearchString: (seachString: string) => void;
 }
 
-export const useSearchStore = create<SearchStore>((set, get) => ({
+export const useSearchStore = create<SearchStore>((set) => ({
   searchString: '',
-  updateSearchString: (searchString) => {
+  setSearchString: (searchString) => {
     set({ searchString });
   },
 }));
