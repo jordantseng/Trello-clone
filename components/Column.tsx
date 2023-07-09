@@ -1,5 +1,4 @@
 import { Draggable, Droppable } from 'react-beautiful-dnd';
-import { shallow } from 'zustand/shallow';
 import { PlusCircleIcon } from '@heroicons/react/24/solid';
 
 import TodoCard from '@/components/TodoCard';
