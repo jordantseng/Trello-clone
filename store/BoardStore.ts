@@ -2,10 +2,7 @@ import { create } from 'zustand';
 import { DropResult } from 'react-beautiful-dnd';
 
 import { ID, databases, storages } from '@/appwrite';
-import {
-  getTodosGroupedByColumn,
-  getTodosGroupedByColumnV2,
-} from '@/lib/getTodosGroupedByColumn';
+import { getTodosGroupedByColumn } from '@/lib/getTodosGroupedByColumn';
 import uploadImage from '@/lib/uploadImage';
 import updateTodos from '@/lib/updateTodos';
 
@@ -146,6 +143,7 @@ export const useBoardStore = create<BoardState>((set, get) => ({
 
     if (image) {
       const fileUploaded = await uploadImage(image);
+      console.log(fileUploaded)
       if (fileUploaded) {
         file = {
           bucketId: fileUploaded.bucketId,
